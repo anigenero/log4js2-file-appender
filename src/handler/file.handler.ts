@@ -1,4 +1,6 @@
+import { existsSync } from 'fs';
 import { throttle } from 'lodash';
+import { dirname } from 'path';
 import { IFileAppenderConfig } from '../file.appender';
 import { FileWriter } from './file.writer';
 
@@ -13,9 +15,9 @@ export class FileHandler extends FileWriter {
 
         super();
 
-        const directory = FileWriter.path.dirname(this._config.fileName);
+        const directory = dirname(this._config.fileName);
 
-        if (!FileWriter.fs.existsSync(directory)) {
+        if (!existsSync(directory)) {
             FileWriter.createDirectories(directory);
         }
 

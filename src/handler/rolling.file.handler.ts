@@ -1,5 +1,6 @@
+import { existsSync, renameSync, statSync } from 'fs';
 import { throttle } from 'lodash';
-import { Formatter } from '../../layout/formatter';
+import { dirname } from 'path';
 import { IRollingFileAppenderConfig } from '../rolling.file.appender';
 import { FileWriter } from './file.writer';
 
@@ -17,14 +18,14 @@ export class RollingFileHandler extends FileWriter {
 
         super();
 
-        const directory = FileWriter.path.dirname(this._config.fileName);
+        const directory = dirname(this._config.fileName);
 
-        if (!FileWriter.fs.existsSync(directory)) {
+        if (!existsSync(directory)) {
             FileWriter.createDirectories(directory);
         }
 
-        if (FileWriter.fs.existsSync(this._config.fileName)) {
-            const stats = FileWriter.fs.statSync(this._config.fileName);
+        if (existsSync(this._config.fileName)) {
+            const stats = statSync(this._config.fileName);
             this._size = stats.size;
         }
 
@@ -66,13 +67,10 @@ export class RollingFileHandler extends FileWriter {
 
                     this._index++;
 
-                    const fileName = Formatter.format(this._config.filePattern
-                        .replace(/%i/g, `${this._index}`), {
-                        message: this._config.filePattern,
-                        date: new Date()
-                    });
+                    const fileName = this._config.filePattern
+                        .replace(/%i/g, `${this._index}`);
 
-                    FileWriter.fs.renameSync(this._config.fileName, fileName);
+                    renameSync(this._config.fileName, fileName);
 
                 }
 

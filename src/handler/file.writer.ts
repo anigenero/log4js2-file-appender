@@ -1,22 +1,19 @@
-const FS = 'fs';
-const PATH = 'path';
+import { createWriteStream, mkdirSync, WriteStream } from 'fs';
+import { isAbsolute, resolve, sep } from 'path';
 
 export abstract class FileWriter {
 
-    public static fs = require(`${FS}`);
-    public static path = require(`${PATH}`);
-
     public static createDirectories(dir: string) {
 
-        const separator = FileWriter.path.sep;
-        const initDirectory = FileWriter.path.isAbsolute(dir) ? separator : '';
+        const separator = sep;
+        const initDirectory = isAbsolute(dir) ? separator : '';
         const baseDirectory = '.';
 
         return dir.split(separator).reduce((parentDir, childDir) => {
 
-            const currentDirectory = FileWriter.path.resolve(baseDirectory, parentDir, childDir);
+            const currentDirectory = resolve(baseDirectory, parentDir, childDir);
             try {
-                FileWriter.fs.mkdirSync(currentDirectory);
+                mkdirSync(currentDirectory);
             } catch (err) {
                 if (err.code === 'EEXIST') {
                     return currentDirectory;
@@ -27,7 +24,7 @@ export abstract class FileWriter {
                 }
 
                 const caughtErr = ['EACCES', 'EPERM', 'EISDIR'].indexOf(err.code) > -1;
-                if (!caughtErr || caughtErr && currentDirectory === FileWriter.path.resolve(dir)) {
+                if (!caughtErr || caughtErr && currentDirectory === resolve(dir)) {
                     throw err; // Throw if it's just the last created dir.
                 }
             }
@@ -36,7 +33,7 @@ export abstract class FileWriter {
         }, initDirectory);
     }
 
-    protected _logFile: NodeJS.WriteStream;
+    protected _logFile: WriteStream;
 
     protected _appendToFile(messages: string[]): number {
 
@@ -55,8 +52,8 @@ export abstract class FileWriter {
 
     }
 
-    protected _createStream(fileName: string): NodeJS.WriteStream {
-        return FileWriter.fs.createWriteStream(fileName, {
+    protected _createStream(fileName: string): WriteStream {
+        return createWriteStream(fileName, {
             autoClose: true,
             encoding: 'utf8',
             flags: 'w+'
