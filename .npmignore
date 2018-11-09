@@ -1,0 +1,11 @@
+.idea
+
+/coverage
+/logs
+/src
+/types
+
+.travis.yml
+jest.setup.js
+tsconfig.json
+tslint.json
