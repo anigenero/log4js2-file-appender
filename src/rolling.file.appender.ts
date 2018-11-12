@@ -17,25 +17,19 @@ export class RollingFileAppender extends LogAppender<IRollingFileAppenderConfig>
 
     constructor(private readonly _config: IRollingFileAppenderConfig = {
         fileName: './logs/app.log',
-        filePattern: './logs/app.%d{yyyy-MM-ddTHH:mm}.log',
+        filePattern: './logs/app.%i.log',
         maxBackup: 5,
         maxSize: 10
     }) {
 
         super(_config);
 
-        if (typeof process === 'undefined') {
-            throw new Error('Cannot use RollingFileAppender in browser mode');
-        } else {
+        this._config = {
+            ..._config,
+            maxSize: _config.maxSize * 1024 * 1024
+        };
 
-            this._config = {
-                ..._config,
-                maxSize: _config.maxSize * 1024 * 1024
-            };
-
-            this._handler = new RollingFileHandler(this._config);
-
-        }
+        this._handler = new RollingFileHandler(this._config);
 
     }
 

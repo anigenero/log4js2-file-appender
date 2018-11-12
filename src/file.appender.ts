@@ -14,11 +14,7 @@ export class FileAppender extends LogAppender<IFileAppenderConfig> {
 
         super(_config);
 
-        if (typeof process === 'undefined') {
-            throw new Error('Cannot use FileAppender in browser mode');
-        } else {
-            this._handler = new FileHandler(_config);
-        }
+        this._handler = new FileHandler(_config);
 
     }
 
