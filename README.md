@@ -46,7 +46,7 @@ configure({
     loggers: [{
         tag: 'App',
         logLevel : LogLevel.INFO,
-        appenders: ['Http']
+        appenders: ['Console', 'RollingFile']
     }]
 });
 ```
